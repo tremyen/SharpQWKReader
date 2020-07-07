@@ -101,6 +101,29 @@ namespace QWK
             }
             return foruns;
         }
+
+        public static List<QWKMessge> GetAllMessages(string tmpDirectory)
+        {
+            var messages = new List<QWKMessge>();
+            var sb = new StringBuilder();
+            sb.Append(tmpDirectory);
+            sb.Append("MESSAGES.DAT");
+            string[] lines = File.ReadAllLines(sb.ToString());
+
+            for (var i = 0; i <= lines.Length; i++)
+            {
+                var qwkMessage = new QWKMessge();
+                qwkMessage.StatusFlag = lines[i].Substring(0, 1);
+                qwkMessage.From = lines[i].Substring(46, 25);
+                qwkMessage.To = lines[i].Substring(21, 25);
+                qwkMessage.BytesBlocks = lines[i].Substring(117, 6);
+                qwkMessage.ConferenceNumber = lines[i].Substring(124, 2);
+                qwkMessage.DeleteFlag = lines[i].Substring(124, 2);
+                messages.Add(qwkMessage);
+            }
+
+            return messages;
+        }
     }
 
 
