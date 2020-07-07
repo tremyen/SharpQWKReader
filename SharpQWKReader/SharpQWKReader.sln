@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpQWKReader", "SharpQWKReader.csproj", "{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QWK", "..\QWK\QWK.csproj", "{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38C6D9EF-3646-4AA8-8239-0ABE3D272EF7}
+	EndGlobalSection
+EndGlobal
