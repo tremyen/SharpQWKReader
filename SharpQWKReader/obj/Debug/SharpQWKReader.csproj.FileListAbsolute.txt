@@ -11,3 +11,16 @@ C:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csproj.CoreCompile
 C:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csproj.CopyComplete
 C:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.exe
 C:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.pdb
+D:\Dev\SharpQWKReader\SharpQWKReader\bin\Debug\SharpQWKReader.exe.config
+D:\Dev\SharpQWKReader\SharpQWKReader\bin\Debug\SharpQWKReader.exe
+D:\Dev\SharpQWKReader\SharpQWKReader\bin\Debug\SharpQWKReader.pdb
+D:\Dev\SharpQWKReader\SharpQWKReader\bin\Debug\QWK.dll
+D:\Dev\SharpQWKReader\SharpQWKReader\bin\Debug\QWK.pdb
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csprojAssemblyReference.cache
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.SharpQWKReader.resources
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.Properties.Resources.resources
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csproj.GenerateResource.cache
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csproj.CoreCompileInputs.cache
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.csproj.CopyComplete
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.exe
+D:\Dev\SharpQWKReader\SharpQWKReader\obj\Debug\SharpQWKReader.pdb

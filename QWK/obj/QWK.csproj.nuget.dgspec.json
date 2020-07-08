@@ -1,23 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj": {}
+    "D:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj": {}
   },
   "projects": {
-    "C:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj": {
+    "D:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj",
+        "projectUniqueName": "D:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj",
         "projectName": "QWK",
-        "projectPath": "C:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj",
-        "packagesPath": "C:\\Users\\Manoel\\.nuget\\packages\\",
-        "outputPath": "C:\\Dev\\SharpQWKReader\\QWK\\obj\\",
+        "projectPath": "D:\\Dev\\SharpQWKReader\\QWK\\QWK.csproj",
+        "packagesPath": "C:\\Users\\tremy\\.nuget\\packages\\",
+        "outputPath": "D:\\Dev\\SharpQWKReader\\QWK\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Manoel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\tremy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],

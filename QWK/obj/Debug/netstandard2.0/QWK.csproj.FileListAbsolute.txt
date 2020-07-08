@@ -7,3 +7,12 @@ C:\Dev\SharpQWKReader\QWK\bin\Debug\netstandard2.0\QWK.pdb
 C:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.csproj.CoreCompileInputs.cache
 C:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.dll
 C:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.pdb
+D:\Dev\SharpQWKReader\QWK\bin\Debug\netstandard2.0\QWK.deps.json
+D:\Dev\SharpQWKReader\QWK\bin\Debug\netstandard2.0\QWK.dll
+D:\Dev\SharpQWKReader\QWK\bin\Debug\netstandard2.0\QWK.pdb
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.csprojAssemblyReference.cache
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.AssemblyInfoInputs.cache
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.AssemblyInfo.cs
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.csproj.CoreCompileInputs.cache
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.dll
+D:\Dev\SharpQWKReader\QWK\obj\Debug\netstandard2.0\QWK.pdb

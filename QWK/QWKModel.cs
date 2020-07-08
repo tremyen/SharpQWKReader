@@ -4,12 +4,14 @@ using System.IO;
 using Z = System.IO.Compression;
 using System.Collections.Generic;
 using System.Text;
+using System.Net.Http.Headers;
+using System.Collections;
 
 namespace QWK
 {
     /*
     -----------------------------------------------------------------------------------------
-    CONTROL.DAT
+    CONTROL.DAT (Ascii File)
     -----------------------------------------------------------------------------------------
     Line #
     1   My BBS                   BBS name
@@ -36,7 +38,7 @@ namespace QWK
     -----------------------------------------------------------------------------------------
 
     -----------------------------------------------------------------------------------------
-    MESSAGES.DAT 
+    MESSAGES.DAT (Byte Array)
     -----------------------------------------------------------------------------------------
     Offset  Length  Description
     ------  ------  -------------------------------------------------------------------------
@@ -61,14 +63,33 @@ namespace QWK
     097      12     Password (space filled)
     109       8     Reference message number (in ASCII)
     117       6     Number of 128-bytes blocks in message 
-    123       1     Flag (ASCII 225 means message is active; ASCII 226 means this message is to be killed)
+    123       1     Flag (ASCII 225 means message is active; ASCII 226 means this message 
+                    is to be killed)
     124       2     Conference number (unsigned word)
     126       2     Logical message number in the current packet
     128       1     Indicates whether the message has a network tag-line or not. '*' ' ' 
     -----------------------------------------------------------------------------------------
+
+    -----------------------------------------------------------------------------------------
+    XXXX.NDX (Byte Array)
+    -----------------------------------------------------------------------------------------
+    Offset  Length  Description
+    ------  ------  ------------------------------------------------------
+    1       4   Record number pointing to corresponding message in
+                MESSAGES.DAT.  This number is in the Microsoft MKS$
+                BASIC format.
+    5       1   Conference number of the message.  This byte should
+                not be used because it duplicates both the filename of
+                the index file and the conference # in the header.  It
+                is also one byte long, which is insufficient to handle
+                conferences over 255.
+    -----------------------------------------------------------------------------------------
+
+   
+
     */
 
-    public class MessageHeader
+    public class Message
     {
         public string StatusFlag { get; set; }
         public string MessageNumber { get; set; }
@@ -79,11 +100,12 @@ namespace QWK
         public string Subject { get; set; }
         public string Password { get; set; }
         public string ReferenceMessageNumber { get; set; }
-        public Int32 BytesBlocks { get; set; }
+        public Int32 MessageBlocks { get; set; }
         public string DeleteFlag { get; set; }
         public string ConferenceNumber { get; set; }
         public string NumberInCurrentePacket { get; set; }
         public string TagLineFlag { get; set; }
+        public string Body { get; set; }
     }
 
     public class BBSInfo
@@ -96,12 +118,18 @@ namespace QWK
         public string SysopName { get; set; }
         public string UserName { get; set; }
         public string BbsId { get; set; }
+        public Int32 MessagesInPacket { get; set; }
     }
 
     public class Forum
     {
         public string ForumID { get; set; }
         public string ForumName { get; set; }
+    }
+
+    public class MessagePointer
+    {
+        public Int64 messageBytesLocation { get; set; }
     }
 
     public class Methods
@@ -130,6 +158,20 @@ namespace QWK
             return lines;
         }
 
+        private static byte[] OpenNDXFile(string tmpdir, string forumId)
+        {
+            var sb = new StringBuilder();
+            byte[] byteArray = { new byte() };
+            sb.Append(tmpdir);
+            sb.Append(forumId);
+            sb.Append(".NDX");
+            if (File.Exists(sb.ToString()))
+            {
+                byteArray = File.ReadAllBytes(sb.ToString());
+            }
+            return byteArray;
+        }
+
         private static byte[] GetMessageDatBytes(string tmpdir)
         {
             var sb = new StringBuilder();
@@ -137,16 +179,6 @@ namespace QWK
             sb.Append("MESSAGES.DAT");
             var strBytes = File.ReadAllBytes(sb.ToString());
             return strBytes;
-        }
-
-
-        private static string[] OpenMessageDat(string tmpdir)
-        {
-            var sb = new StringBuilder();
-            sb.Append(tmpdir);
-            sb.Append("MESSAGES.DAT");
-            string[] lines = File.ReadAllLines(sb.ToString());
-            return lines;
         }
 
         public static BBSInfo GetBBSInfo(string tmpdir)
@@ -158,8 +190,9 @@ namespace QWK
             bbsInfo.BbsPhone = lines[2];
             bbsInfo.SysopName = lines[3];
             bbsInfo.MailDoorReg = lines[4];
-            bbsInfo.MailPacketCreationTime = lines[5];           
+            bbsInfo.MailPacketCreationTime = lines[5];
             bbsInfo.UserName = lines[6];
+            bbsInfo.MessagesInPacket = Convert.ToInt32(lines[9]);
             return bbsInfo;
         }
 
@@ -182,40 +215,51 @@ namespace QWK
             return foruns;
         }
 
-        public static List<MessageHeader> GetAllHeaders(string tmpdir)
+        public static List<Message> GetForumMessages(string tmpdir, string ForumId)
         {
-            var messsageHeaders = new List<MessageHeader>();
+            var messsages = new List<Message>();
             var allBytes = GetMessageDatBytes(tmpdir);
-            var header = GetMessageHeader(tmpdir, 128);
-            messsageHeaders.Add(header);
-            int messageBlocks = header.BytesBlocks*128;
+            var message = GetMessage(tmpdir, 128);
+            messsages.Add(message);
+            int messageBlocks = message.MessageBlocks * 128;
             int nextBlock = messageBlocks + 128;
             while (nextBlock < allBytes.Length)
             {
-                header = GetMessageHeader(tmpdir, nextBlock);
-                messsageHeaders.Add(header);
-                messageBlocks = header.BytesBlocks * 128;
+                message = GetMessage(tmpdir, nextBlock);
+                messsages.Add(message);
+                messageBlocks = message.MessageBlocks * 128;
                 nextBlock = nextBlock + messageBlocks;
             }
-            return messsageHeaders;
+            return messsages;
         }
 
 
-        public static MessageHeader GetMessageHeader(string tmpDirectory, int start)
+        public static Message GetMessage(string tmpDirectory, Int64 start)
         {
-            var header = new MessageHeader();
+            var message = new Message();
+            var countBlocks = 1;
+            var strBlock = new StringBuilder();
             var strHeader = Get128ByteBlock(tmpDirectory, start);
-            header.StatusFlag = strHeader.Substring(0, 1);
-            header.From = strHeader.Substring(46, 25);
-            header.To = strHeader.Substring(21, 25);
-            header.Subject = strHeader.Substring(71, 25);
-            header.BytesBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
-            header.ConferenceNumber = strHeader.Substring(124, 2);
-            header.DeleteFlag = strHeader.Substring(124, 2);
-            return header;
+
+            message.StatusFlag = strHeader.Substring(0, 1);
+            message.From = strHeader.Substring(46, 25);
+            message.To = strHeader.Substring(21, 25);
+            message.Subject = strHeader.Substring(71, 25);
+            message.MessageBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
+            message.ConferenceNumber = strHeader.Substring(124, 2);
+            message.DeleteFlag = strHeader.Substring(124, 2);
+
+            while (countBlocks <= message.MessageBlocks)
+            {
+                strBlock.Append(Get128ByteBlock(tmpDirectory, 128 * countBlocks));
+                countBlocks++;
+            }
+
+            message.Body = strBlock.ToString();
+            return message;
         }
 
-        private static string Get128ByteBlock(string tmpDirectory, int start)
+        private static string Get128ByteBlock(string tmpDirectory, Int64 start)
         {
             var allBytes = GetMessageDatBytes(tmpDirectory);
             byte[] byteBlock = new byte[128];
@@ -229,8 +273,82 @@ namespace QWK
                 bytecount++;
             }
 
-            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length); 
+            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length);
             return strReturn;
+        }
+
+        public static List<MessagePointer> ReadNDXFile(string tmpdir, string forumId)
+        {
+            List<MessagePointer> messagePointers = new List<MessagePointer>();
+            var messagePointer = new MessagePointer();
+            try
+            {
+                byte[] ndxSourceFile = OpenNDXFile(tmpdir, forumId);
+                if (ndxSourceFile.Length < 4) throw new Exception("There is no message in this forum.");
+                byte[] nextPointer = { 0, 0, 0, 0 };
+                Int64 countBytes = 0;
+
+                while (countBytes < ndxSourceFile.Length)
+                {
+                    nextPointer[0] = ndxSourceFile[countBytes];
+                    nextPointer[1] = ndxSourceFile[countBytes+1];
+                    nextPointer[2] = ndxSourceFile[countBytes+2];
+                    nextPointer[3] = ndxSourceFile[countBytes+3];
+                    BitArray bits = new BitArray(nextPointer);
+                    messagePointer.messageBytesLocation = ConvertMKSToLong(bits);
+                    messagePointers.Add(messagePointer);
+                    countBytes = countBytes + 5;
+                }                
+                return messagePointers;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private static Int64 ConvertMKSToLong(BitArray mksByteArray)
+        {
+            /* 
+            --------------------------------------------------------
+            Microsoft binary (by Jeffery Foy)
+            --------------------------------------------------------
+            31 - 24    23     22 - 0        <-- bit position 32 bits
+            +-----------------+----------+
+            | exponent | sign | mantissa |
+            +----------+------+----------+
+            --------------------------------------------------------
+            */
+            BitArray mantissaBits = new BitArray(23);
+            BitArray exponentBits = new BitArray(9);
+            bool sign = mksByteArray.Get(23);
+
+            Int32 mantissa = 0;
+            Int32 exponent = 0;
+            Int64 convertedToLong = 0;
+            int exponentCount = 0; 
+
+            // pega os bits da mantissa
+            for (var m = 0; m < 23; m++)
+            {
+                mantissaBits[m] = mksByteArray[m];
+            }
+            mantissa = Convert.ToInt32(mantissaBits);
+
+            // pega os bytes do expoente 
+            for (var e = 24; e < 32; e++)
+            {
+                exponentBits[exponentCount] = mksByteArray[e];
+                exponentCount++;
+            }
+            exponent = Convert.ToInt32(exponentBits);
+
+            // troca o expoente caso seja negativo
+            if (sign) exponent = exponent * -1;
+
+            // calcula o ponteiro
+            convertedToLong = mantissa ^ exponent;
+            return convertedToLong;
         }
     }
 }

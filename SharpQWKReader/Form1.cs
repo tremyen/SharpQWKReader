@@ -7,6 +7,9 @@ namespace SharpQWKReader
 {
     public partial class SharpQWKReader : Form
     {
+        public string forumId = "0";
+        public Int64 messagePointer = 0;
+
         public SharpQWKReader()
         {
             InitializeComponent();
@@ -24,6 +27,7 @@ namespace SharpQWKReader
             lblPacketCreationDate.Text = bbsInfo.MailPacketCreationTime;
             lblSysopName.Text = bbsInfo.SysopName;
             lblUserName.Text = bbsInfo.UserName;
+            lblMsgInThisPacket.Text = bbsInfo.MessagesInPacket.ToString();
 
             var forunsListView = new List<ListViewItem>();
             var foruns = Q.GetForuns("TMP\\");
@@ -33,15 +37,36 @@ namespace SharpQWKReader
                 var lvItem = new ListViewItem(row);
                 listView1.Items.Add(lvItem);
             }
+        }
 
-            var messages = Q.GetAllHeaders("TMP\\");
-            foreach (var message in messages)
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
             {
-                var rowHeader = new string[] { message.From, message.To, message.Subject };
-                var lvItemHeader = new ListViewItem(rowHeader);
-                lstMessages.Items.Add(lvItemHeader);
+                if (this.listView1.SelectedItems.Count == 0) return;
+                forumId = listView1.SelectedItems[0].Text;
+                var messagePointers = Q.ReadNDXFile("TMP\\", forumId.ToString());
+                foreach (var messagePointer in messagePointers)
+                {
+                    var row = new string[] { messagePointer.messageBytesLocation.ToString() };
+                    var lvItem = new ListViewItem(row);
+                    lstIndiceAberto.Items.Add(lvItem);
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
+        private void lstIndiceAberto_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            messagePointer = Convert.ToInt64(lstIndiceAberto.SelectedItems[0].Text);
+            var message = Q.GetMessage("TMP\\", messagePointer);
+            var rowHeader = new string[] { message.From, message.To, message.Subject };
+            var lvItemHeader = new ListViewItem(rowHeader);
+            lstMessages.Items.Add(lvItemHeader);
+            txtMensagem.Text = message.Body;
         }
     }
 }
