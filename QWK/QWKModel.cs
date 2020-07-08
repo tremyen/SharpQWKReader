@@ -1,5 +1,4 @@
 ﻿using System;
-using T = System.Text;
 using System.IO;
 using Z = System.IO.Compression;
 using System.Collections.Generic;
@@ -158,7 +157,7 @@ namespace QWK
             bbsInfo.BbsPhone = lines[2];
             bbsInfo.SysopName = lines[3];
             bbsInfo.MailDoorReg = lines[4];
-            bbsInfo.MailPacketCreationTime = lines[5];           
+            bbsInfo.MailPacketCreationTime = lines[5];
             bbsInfo.UserName = lines[6];
             return bbsInfo;
         }
@@ -188,7 +187,7 @@ namespace QWK
             var allBytes = GetMessageDatBytes(tmpdir);
             var header = GetMessageHeader(tmpdir, 128);
             messsageHeaders.Add(header);
-            int messageBlocks = header.BytesBlocks*128;
+            int messageBlocks = header.BytesBlocks * 128;
             int nextBlock = messageBlocks + 128;
             while (nextBlock < allBytes.Length)
             {
@@ -229,8 +228,18 @@ namespace QWK
                 bytecount++;
             }
 
-            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length); 
+            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length);
             return strReturn;
         }
+
+        /* 
+       private static Int64 ConvertMSMKSToLong(byte[] mksNumber)
+       {
+
+           Int64 convertedNumber = (((m1 + ((unsigned long) m2 << 8) +((unsigned long) m3 << 16)) | 0x800000L) >> (24 - (exp - 0x80))); 
+           return convertedNumber;
+         
+    }
+          */
     }
 }
