@@ -29,35 +29,40 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.arquivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lblBBSName = new System.Windows.Forms.Label();
-            this.lblCityState = new System.Windows.Forms.Label();
-            this.lblSysopName = new System.Windows.Forms.Label();
-            this.lblDoorReg = new System.Windows.Forms.Label();
-            this.lblPacketCreationDate = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
+            this.lblPacketCreationDate = new System.Windows.Forms.Label();
+            this.lblDoorReg = new System.Windows.Forms.Label();
+            this.lblSysopName = new System.Windows.Forms.Label();
+            this.lblCityState = new System.Windows.Forms.Label();
+            this.lblBBSName = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lstMessages = new System.Windows.Forms.ListView();
             this.From = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.To = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Subject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label7 = new System.Windows.Forms.Label();
+            this.lblBBSPhone = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -66,17 +71,9 @@
             this.arquivoToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1194, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1085, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 464);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1194, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
             // 
             // arquivoToolStripMenuItem
             // 
@@ -89,16 +86,24 @@
             // abrirToolStripMenuItem
             // 
             this.abrirToolStripMenuItem.Name = "abrirToolStripMenuItem";
-            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.abrirToolStripMenuItem.Text = "Abrir";
             this.abrirToolStripMenuItem.Click += new System.EventHandler(this.abrirToolStripMenuItem_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Location = new System.Drawing.Point(0, 596);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1085, 22);
+            this.statusStrip1.TabIndex = 1;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.listView1);
-            this.groupBox1.Location = new System.Drawing.Point(320, 28);
+            this.groupBox1.Location = new System.Drawing.Point(406, 28);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(862, 188);
+            this.groupBox1.Size = new System.Drawing.Size(669, 206);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Foruns";
@@ -113,7 +118,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(856, 169);
+            this.listView1.Size = new System.Drawing.Size(663, 187);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -130,6 +135,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lblBBSPhone);
+            this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.lblUserName);
             this.groupBox2.Controls.Add(this.lblPacketCreationDate);
             this.groupBox2.Controls.Add(this.lblDoorReg);
@@ -144,10 +151,109 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(13, 28);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(301, 185);
+            this.groupBox2.Size = new System.Drawing.Size(387, 206);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "BBS Info";
+            // 
+            // lblUserName
+            // 
+            this.lblUserName.AutoSize = true;
+            this.lblUserName.Location = new System.Drawing.Point(181, 172);
+            this.lblUserName.Name = "lblUserName";
+            this.lblUserName.Size = new System.Drawing.Size(22, 13);
+            this.lblUserName.TabIndex = 11;
+            this.lblUserName.Text = "< >";
+            // 
+            // lblPacketCreationDate
+            // 
+            this.lblPacketCreationDate.AutoSize = true;
+            this.lblPacketCreationDate.Location = new System.Drawing.Point(181, 148);
+            this.lblPacketCreationDate.Name = "lblPacketCreationDate";
+            this.lblPacketCreationDate.Size = new System.Drawing.Size(22, 13);
+            this.lblPacketCreationDate.TabIndex = 10;
+            this.lblPacketCreationDate.Text = "< >";
+            // 
+            // lblDoorReg
+            // 
+            this.lblDoorReg.AutoSize = true;
+            this.lblDoorReg.Location = new System.Drawing.Point(181, 124);
+            this.lblDoorReg.Name = "lblDoorReg";
+            this.lblDoorReg.Size = new System.Drawing.Size(22, 13);
+            this.lblDoorReg.TabIndex = 9;
+            this.lblDoorReg.Text = "< >";
+            // 
+            // lblSysopName
+            // 
+            this.lblSysopName.AutoSize = true;
+            this.lblSysopName.Location = new System.Drawing.Point(181, 100);
+            this.lblSysopName.Name = "lblSysopName";
+            this.lblSysopName.Size = new System.Drawing.Size(22, 13);
+            this.lblSysopName.TabIndex = 8;
+            this.lblSysopName.Text = "< >";
+            // 
+            // lblCityState
+            // 
+            this.lblCityState.AutoSize = true;
+            this.lblCityState.Location = new System.Drawing.Point(181, 77);
+            this.lblCityState.Name = "lblCityState";
+            this.lblCityState.Size = new System.Drawing.Size(22, 13);
+            this.lblCityState.TabIndex = 7;
+            this.lblCityState.Text = "< >";
+            // 
+            // lblBBSName
+            // 
+            this.lblBBSName.AutoSize = true;
+            this.lblBBSName.Location = new System.Drawing.Point(181, 28);
+            this.lblBBSName.Name = "lblBBSName";
+            this.lblBBSName.Size = new System.Drawing.Size(22, 13);
+            this.lblBBSName.TabIndex = 6;
+            this.lblBBSName.Text = "< >";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(15, 172);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(58, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "User name";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(15, 148);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Mail packet creation time";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(14, 124);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(152, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Mail door registration #, BBSID";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(14, 100);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(89, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "BBS Sysop name";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(14, 77);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(94, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "BBS city and state";
             // 
             // label1
             // 
@@ -158,105 +264,12 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "BBS name";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 52);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "BBS city and state";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 77);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "BBS Sysop name";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 100);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(152, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Mail door registration #, BBSID";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 124);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Mail packet creation time";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(15, 148);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(58, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "User name";
-            // 
-            // lblBBSName
-            // 
-            this.lblBBSName.AutoSize = true;
-            this.lblBBSName.Location = new System.Drawing.Point(181, 28);
-            this.lblBBSName.Name = "lblBBSName";
-            this.lblBBSName.Size = new System.Drawing.Size(0, 13);
-            this.lblBBSName.TabIndex = 6;
-            // 
-            // lblCityState
-            // 
-            this.lblCityState.AutoSize = true;
-            this.lblCityState.Location = new System.Drawing.Point(181, 52);
-            this.lblCityState.Name = "lblCityState";
-            this.lblCityState.Size = new System.Drawing.Size(0, 13);
-            this.lblCityState.TabIndex = 7;
-            // 
-            // lblSysopName
-            // 
-            this.lblSysopName.AutoSize = true;
-            this.lblSysopName.Location = new System.Drawing.Point(181, 77);
-            this.lblSysopName.Name = "lblSysopName";
-            this.lblSysopName.Size = new System.Drawing.Size(0, 13);
-            this.lblSysopName.TabIndex = 8;
-            // 
-            // lblDoorReg
-            // 
-            this.lblDoorReg.AutoSize = true;
-            this.lblDoorReg.Location = new System.Drawing.Point(181, 100);
-            this.lblDoorReg.Name = "lblDoorReg";
-            this.lblDoorReg.Size = new System.Drawing.Size(0, 13);
-            this.lblDoorReg.TabIndex = 9;
-            // 
-            // lblPacketCreationDate
-            // 
-            this.lblPacketCreationDate.AutoSize = true;
-            this.lblPacketCreationDate.Location = new System.Drawing.Point(181, 124);
-            this.lblPacketCreationDate.Name = "lblPacketCreationDate";
-            this.lblPacketCreationDate.Size = new System.Drawing.Size(0, 13);
-            this.lblPacketCreationDate.TabIndex = 10;
-            // 
-            // lblUserName
-            // 
-            this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(181, 148);
-            this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(0, 13);
-            this.lblUserName.TabIndex = 11;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.lstMessages);
-            this.groupBox3.Location = new System.Drawing.Point(13, 220);
+            this.groupBox3.Location = new System.Drawing.Point(13, 240);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1169, 241);
+            this.groupBox3.Size = new System.Drawing.Size(1062, 137);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Messages";
@@ -271,7 +284,7 @@
             this.lstMessages.HideSelection = false;
             this.lstMessages.Location = new System.Drawing.Point(3, 16);
             this.lstMessages.Name = "lstMessages";
-            this.lstMessages.Size = new System.Drawing.Size(1163, 222);
+            this.lstMessages.Size = new System.Drawing.Size(1056, 118);
             this.lstMessages.TabIndex = 0;
             this.lstMessages.UseCompatibleStateImageBehavior = false;
             this.lstMessages.View = System.Windows.Forms.View.Details;
@@ -279,37 +292,79 @@
             // From
             // 
             this.From.Text = "From";
+            this.From.Width = 120;
             // 
             // To
             // 
             this.To.Text = "To";
+            this.To.Width = 120;
             // 
             // Subject
             // 
             this.Subject.Text = "Subject";
+            this.Subject.Width = 360;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(15, 52);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(62, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "BBS Phone";
+            // 
+            // lblBBSPhone
+            // 
+            this.lblBBSPhone.AutoSize = true;
+            this.lblBBSPhone.Location = new System.Drawing.Point(181, 52);
+            this.lblBBSPhone.Name = "lblBBSPhone";
+            this.lblBBSPhone.Size = new System.Drawing.Size(22, 13);
+            this.lblBBSPhone.TabIndex = 13;
+            this.lblBBSPhone.Text = "< >";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.textBox1);
+            this.groupBox4.Location = new System.Drawing.Point(16, 384);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(1056, 199);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Read Pannel";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(7, 20);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(1043, 173);
+            this.textBox1.TabIndex = 0;
             // 
             // SharpQWKReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1194, 486);
+            this.ClientSize = new System.Drawing.Size(1085, 618);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "SharpQWKReader";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sharp QWK Reader";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -343,6 +398,10 @@
         private System.Windows.Forms.ColumnHeader From;
         private System.Windows.Forms.ColumnHeader To;
         private System.Windows.Forms.ColumnHeader Subject;
+        private System.Windows.Forms.Label lblBBSPhone;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
