@@ -1,45 +1,13 @@
 ﻿using System;
-using T = System.Text;
 using System.IO;
 using Z = System.IO.Compression;
 using System.Collections.Generic;
 using System.Text;
-using System.Net.Http.Headers;
 using System.Collections;
 
 namespace QWK
 {
-    /*
-    -----------------------------------------------------------------------------------------
-    CONTROL.DAT (Ascii File)
-    -----------------------------------------------------------------------------------------
-    Line #
-    1   My BBS                   BBS name
-    2   New York, NY             BBS city and state
-    3   212-555-1212             BBS phone number
-    4   John Doe, Sysop          BBS Sysop name
-    5   20052,MYBBS              Mail door registration #, BBSID
-    6   01-01-1991,23:59:59      Mail packet creation time
-    7   JANE DOE                 User name (upper case)
-    8                            Name of menu for Qmail, blank if none
-    9   0                        ? Seem to be always zero
-    10   999                      Total number of messages in packet
-    11   121                      Total number of conference minus 1
-    12   0                        1st conf. number
-    13   Main Board               1st conf. name (13 characters or less)
-    14   1                        2nd conf. number
-    15   General                  2nd conf. name
-    ..   3                        etc. onward until it hits max. conf.
-    ..   123                      Last conf. number
-    ..   Amiga_I                  Last conf. name
-    ..   HELLO                    Welcome screen file
-    ..   NEWS                     BBS news file
-    ..   SCRIPT0                  Log off screen
-    -----------------------------------------------------------------------------------------
 
-
-
-    */
 
     public class Message
     {
@@ -75,13 +43,15 @@ namespace QWK
 
     public class Forum
     {
-        public string ForumID { get; set; }
-        public string ForumName { get; set; }
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public int NumberOfMessages { get; set; }
+
     }
 
     public class MessagePointer
     {
-        public Int64 messageBytesLocation { get; set; }
+        public ulong messageBytesLocation { get; set; }
     }
 
     public class Methods
@@ -103,6 +73,34 @@ namespace QWK
 
         private static string[] OpenControlDat(string tmpdir)
         {
+            /*
+            -----------------------------------------------------------------------------------------
+            CONTROL.DAT (Ascii File)
+            -----------------------------------------------------------------------------------------
+            Line #
+            1   My BBS                   BBS name
+            2   New York, NY             BBS city and state
+            3   212-555-1212             BBS phone number
+            4   John Doe, Sysop          BBS Sysop name
+            5   20052,MYBBS              Mail door registration #, BBSID
+            6   01-01-1991,23:59:59      Mail packet creation time
+            7   JANE DOE                 User name (upper case)
+            8                            Name of menu for Qmail, blank if none
+            9   0                        ? Seem to be always zero
+            10   999                      Total number of messages in packet
+            11   121                      Total number of conference minus 1
+            12   0                        1st conf. number
+            13   Main Board               1st conf. name (13 characters or less)
+            14   1                        2nd conf. number
+            15   General                  2nd conf. name
+            ..   3                        etc. onward until it hits max. conf.
+            ..   123                      Last conf. number
+            ..   Amiga_I                  Last conf. name
+            ..   HELLO                    Welcome screen file
+            ..   NEWS                     BBS news file
+            ..   SCRIPT0                  Log off screen
+            -----------------------------------------------------------------------------------------
+            */
             var sb = new StringBuilder();
             sb.Append(tmpdir);
             sb.Append("CONTROL.DAT");
@@ -140,7 +138,7 @@ namespace QWK
             return byteArray;
         }
 
-        private static byte[] GetMessageDatBytes(string tmpdir)
+        private static byte[] OpenMessageDat(string tmpdir)
         {
             var sb = new StringBuilder();
             sb.Append(tmpdir);
@@ -175,13 +173,23 @@ namespace QWK
                 if (i % 2 != 0)
                 {
                     var forum = new Forum();
-                    forum.ForumID = lines[i];
-                    forum.ForumName = lines[i + 1];
+                    forum.ID = lines[i];
+                    forum.Name = lines[i + 1];
+                    forum.NumberOfMessages = GetForumNumberOfMessages(lines[i]);
                     foruns.Add(forum);
                 }
             }
             return foruns;
         }
+
+        public static Int32 GetForumNumberOfMessages(string forumId)
+        {
+            var pointers = OpenNDXFile("TMP\\", forumId);
+            if (pointers.Length < 5) return 0;
+            int NumOfMessages = pointers.Length / 5;
+            return NumOfMessages;
+        }
+
 
         public static Message GetMessage(string tmpDirectory, Int64 start)
         {
@@ -226,6 +234,7 @@ namespace QWK
                 var countBlocks = 1;
                 var strBlock = new StringBuilder();
                 var strHeader = Get128ByteBlock(tmpDirectory, start);
+                var pointerCount = start + 128;
 
                 message.StatusFlag = strHeader.Substring(0, 1);
                 message.From = strHeader.Substring(46, 25);
@@ -237,7 +246,8 @@ namespace QWK
 
                 while (countBlocks <= message.MessageBlocks)
                 {
-                    strBlock.Append(Get128ByteBlock(tmpDirectory, 128 * countBlocks));
+                    strBlock.Append(Get128ByteBlock(tmpDirectory, pointerCount));
+                    pointerCount = pointerCount + 128;
                     countBlocks++;
                 }
 
@@ -253,12 +263,12 @@ namespace QWK
 
         private static string Get128ByteBlock(string tmpDirectory, Int64 start)
         {
-            var allBytes = GetMessageDatBytes(tmpDirectory);
-            byte[] byteBlock = new byte[127];
+            var allBytes = OpenMessageDat(tmpDirectory);
+            byte[] byteBlock = new byte[128];
             var newBlockCount = 0;
             var bytecount = start;
 
-            while (newBlockCount < 127)
+            while (newBlockCount <= 127)
             {
                 byteBlock[newBlockCount] = allBytes[bytecount];
                 newBlockCount++;
@@ -269,7 +279,7 @@ namespace QWK
             return strReturn;
         }
 
-        public static List<MessagePointer> ReadNDXFile(string tmpdir, string forumId)
+        public static List<MessagePointer> GetMessagePointers(string tmpdir, string forumId)
         {
             List<MessagePointer> messagePointers = new List<MessagePointer>();
 
@@ -277,8 +287,8 @@ namespace QWK
             {
                 byte[] ndxSourceFile = OpenNDXFile(tmpdir, forumId);
                 if (ndxSourceFile.Length < 4) throw new Exception("There is no message in this forum.");
-                byte[] nextPointer = { 0, 0, 0, 0 };
-                Int64 countBytes = 0;
+                byte[] nextPointer = {0, 0, 0, 0};
+                long countBytes = 0;
 
                 while (countBytes < ndxSourceFile.Length)
                 {
@@ -287,7 +297,8 @@ namespace QWK
                     nextPointer[2] = ndxSourceFile[countBytes + 2];
                     nextPointer[3] = ndxSourceFile[countBytes + 3];
                     var messagePointer = new MessagePointer();
-                    messagePointer.messageBytesLocation = ConvertMKSToLong(nextPointer);
+                    var recordNumber = GetRecordNumber(nextPointer); 
+                    messagePointer.messageBytesLocation = (recordNumber-1)* 128;
                     messagePointers.Add(messagePointer);
                     countBytes = countBytes + 5;
                 }
@@ -299,10 +310,9 @@ namespace QWK
             }
         }
 
-        private static Int64 ConvertMKSToLong(byte[] mksBitArray)
+        private static ulong GetRecordNumber(byte[] pointerByte)
         {
             /*
-            Existem duas formas de representar, parece que cada board usa um. vai ser foda samerda. 
             --------------------------------------------------------
             Microsoft binary (by Jeffery Foy)
             --------------------------------------------------------
@@ -312,66 +322,9 @@ namespace QWK
             +----------+------+----------+
             -------------------------------------------------------
             */
-            var mantissaBytes = new byte[3];
-            var mantissaCount = 0;
 
-            // pega os bytes da mantissa
-            for (var m = 1; m < 4; m++)
-            {
-                mantissaBytes[mantissaCount] = mksBitArray[m];
-                mantissaCount++;
-            }
-            long mantissa = Convert.ToInt64(mantissaBytes);
-            byte exponentByte = mksBitArray[4];
-            long exponent = Convert.ToInt64(exponentByte);
-
-            // troca o expoente caso seja negativo
-            //if (sign) exponent = exponent * -1;
-
-            // calcula o ponteiro
-            long convertedToLong = (long)Math.Pow(mantissa, exponent);
-            return convertedToLong;
-        }
-
-        private static Int64 ConvertIEEEToLong(BitArray mksBitArray)
-        {
-            /*
-           IEEE (C/Pascal/etc.):
-
-           31     30 - 23    22 - 0        <-- bit position
-           +----------------------------+
-           | sign | exponent | mantissa |
-           +------+----------+----------+
-           */
-            BitArray mantissaBits = new BitArray(22);
-            BitArray exponentBits = new BitArray(8);
-            bool sign = mksBitArray.Get(31);
-            var tempArray = new byte[4];
-            int exponentCount = 0;
-
-            // pega os bits da mantissa
-            for (var m = 0; m < 22; m++)
-            {
-                mantissaBits.Set(m, mksBitArray.Get(m));
-            }            
-            mantissaBits.CopyTo(tempArray, 0);
-            int mantissa = BitConverter.ToInt32(tempArray, 0) - 2;
-
-            // pega os bytes do expoente 
-            for (var e = 23; e < 30; e++)
-            {
-                exponentBits.Set(exponentCount, mksBitArray.Get(e));
-                exponentCount++;
-            }
-            exponentBits.CopyTo(tempArray, 0);
-            int exponent = BitConverter.ToInt32(tempArray, 0);
-
-            // troca o expoente caso seja negativo
-            if (sign) exponent = exponent * -1;
-
-            // calcula o ponteiro
-            long convertedToLong = (long)Math.Pow(mantissa, exponent);
-            return convertedToLong;
+            return ((pointerByte[0] + ((ulong)pointerByte[1] << 8) + 
+                ((ulong)pointerByte[2] << 16)) | 0x800000L) >> (24 - (pointerByte[3] - 0x80));
         }
     }
 }
