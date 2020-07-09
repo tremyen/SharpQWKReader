@@ -37,55 +37,7 @@ namespace QWK
     ..   SCRIPT0                  Log off screen
     -----------------------------------------------------------------------------------------
 
-    -----------------------------------------------------------------------------------------
-    MESSAGES.DAT (Byte Array)
-    -----------------------------------------------------------------------------------------
-    Offset  Length  Description
-    ------  ------  -------------------------------------------------------------------------
-    001     001     Message status flag (unsigned character)
-                    ' ' = public, unread
-                    '-' = public, read
-                    '*' = private, read by someone but not by intended recipient
-                    '+' = private, read by official recipient
-                    '~' = comment to Sysop, unread
-                    '`' = comment to Sysop, read
-                    '%' = sender password protected, unread
-                    '^' = sender password protected, read
-                    '!' = group password protected, unread
-                    '#' = group password protected, read
-                    '$' = group password protected to all
-    002       7     Message number (in ASCII)
-    009       8     Date (mm-dd-yy, in ASCII)
-    017       5     Time (24 hour hh:mm, in ASCII)
-    022      25     To (uppercase, left justified)
-    047      25     From (uppercase, left justified)
-    072      25     Subject of message (mixed case)
-    097      12     Password (space filled)
-    109       8     Reference message number (in ASCII)
-    117       6     Number of 128-bytes blocks in message 
-    123       1     Flag (ASCII 225 means message is active; ASCII 226 means this message 
-                    is to be killed)
-    124       2     Conference number (unsigned word)
-    126       2     Logical message number in the current packet
-    128       1     Indicates whether the message has a network tag-line or not. '*' ' ' 
-    -----------------------------------------------------------------------------------------
 
-    -----------------------------------------------------------------------------------------
-    XXXX.NDX (Byte Array)
-    -----------------------------------------------------------------------------------------
-    Offset  Length  Description
-    ------  ------  ------------------------------------------------------
-    1       4   Record number pointing to corresponding message in
-                MESSAGES.DAT.  This number is in the Microsoft MKS$
-                BASIC format.
-    5       1   Conference number of the message.  This byte should
-                not be used because it duplicates both the filename of
-                the index file and the conference # in the header.  It
-                is also one byte long, which is insufficient to handle
-                conferences over 255.
-    -----------------------------------------------------------------------------------------
-
-   
 
     */
 
@@ -160,6 +112,22 @@ namespace QWK
 
         private static byte[] OpenNDXFile(string tmpdir, string forumId)
         {
+            /*
+            -----------------------------------------------------------------------------------------
+            XXXX.NDX(Byte Array)
+            -----------------------------------------------------------------------------------------
+            Offset  Length Description
+            ------------------------------------------------------------------
+            1       4   Record number pointing to corresponding message in
+                        MESSAGES.DAT.This number is in the Microsoft MKS$
+                        BASIC format.
+            5       1   Conference number of the message.This byte should
+                        not be used because it duplicates both the filename of
+                        the index file and the conference # in the header.  It
+                        is also one byte long, which is insufficient to handle
+                        conferences over 255.
+            -----------------------------------------------------------------------------------------
+            */
             var sb = new StringBuilder();
             byte[] byteArray = { new byte() };
             sb.Append(tmpdir);
@@ -215,72 +183,96 @@ namespace QWK
             return foruns;
         }
 
-        public static List<Message> GetForumMessages(string tmpdir, string ForumId)
-        {
-            var messsages = new List<Message>();
-            var allBytes = GetMessageDatBytes(tmpdir);
-            var message = GetMessage(tmpdir, 128);
-            messsages.Add(message);
-            int messageBlocks = message.MessageBlocks * 128;
-            int nextBlock = messageBlocks + 128;
-            while (nextBlock < allBytes.Length)
-            {
-                message = GetMessage(tmpdir, nextBlock);
-                messsages.Add(message);
-                messageBlocks = message.MessageBlocks * 128;
-                nextBlock = nextBlock + messageBlocks;
-            }
-            return messsages;
-        }
-
-
         public static Message GetMessage(string tmpDirectory, Int64 start)
         {
-            var message = new Message();
-            var countBlocks = 1;
-            var strBlock = new StringBuilder();
-            var strHeader = Get128ByteBlock(tmpDirectory, start);
+            /*
+            -----------------------------------------------------------------------------------------
+            MESSAGES.DAT(Byte Array)
+            ---------------------------------------------------------------------------------------- -
+            Offset  Length Description
+            -------------------------------------------------------------------------------------
+            001     001     Message status flag(unsigned character)
+                            ' ' = public, unread
+                            '-' = public, read
+                            '*' = private, read by someone but not by intended recipient
+                            '+' = private, read by official recipient
+                            '~' = comment to Sysop, unread
+                            '`' = comment to Sysop, read
+                            '%' = sender password protected, unread
+                            '^' = sender password protected, read
+                            '!' = group password protected, unread
+                            '#' = group password protected, read
+                            '$' = group password protected to all
+            002       7     Message number(in ASCII)
+            009       8     Date(mm-dd-yy, in ASCII)
+            017       5     Time(24 hour hh:mm, in ASCII)
+            022      25     To(uppercase, left justified)
+            047      25     From(uppercase, left justified)
+            072      25     Subject of message(mixed case)
+            097      12     Password(space filled)
+            109       8     Reference message number(in ASCII)
+            117       6     Number of 128-bytes blocks in message 
+            123       1     Flag(ASCII 225 means message is active; ASCII 226 means this message
+                            is to be killed)
+            124       2     Conference number (unsigned word)
+            126       2     Logical message number in the current packet
+            128       1     Indicates whether the message has a network tag-line or not. '*' ' ' 
+            ----------------------------------------------------------------------------------------- 
+            */
 
-            message.StatusFlag = strHeader.Substring(0, 1);
-            message.From = strHeader.Substring(46, 25);
-            message.To = strHeader.Substring(21, 25);
-            message.Subject = strHeader.Substring(71, 25);
-            message.MessageBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
-            message.ConferenceNumber = strHeader.Substring(124, 2);
-            message.DeleteFlag = strHeader.Substring(124, 2);
-
-            while (countBlocks <= message.MessageBlocks)
+            try
             {
-                strBlock.Append(Get128ByteBlock(tmpDirectory, 128 * countBlocks));
-                countBlocks++;
+                var message = new Message();
+                var countBlocks = 1;
+                var strBlock = new StringBuilder();
+                var strHeader = Get128ByteBlock(tmpDirectory, start);
+
+                message.StatusFlag = strHeader.Substring(0, 1);
+                message.From = strHeader.Substring(46, 25);
+                message.To = strHeader.Substring(21, 25);
+                message.Subject = strHeader.Substring(71, 25);
+                message.MessageBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
+                message.DeleteFlag = strHeader.Substring(122, 1);
+                message.ConferenceNumber = strHeader.Substring(123, 2);
+
+                while (countBlocks <= message.MessageBlocks)
+                {
+                    strBlock.Append(Get128ByteBlock(tmpDirectory, 128 * countBlocks));
+                    countBlocks++;
+                }
+
+                message.Body = strBlock.ToString();
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
-            message.Body = strBlock.ToString();
-            return message;
         }
 
         private static string Get128ByteBlock(string tmpDirectory, Int64 start)
         {
             var allBytes = GetMessageDatBytes(tmpDirectory);
-            byte[] byteBlock = new byte[128];
-            var bytecount = start;
+            byte[] byteBlock = new byte[127];
             var newBlockCount = 0;
+            var bytecount = start;
 
-            while (newBlockCount < 128)
+            while (newBlockCount < 127)
             {
                 byteBlock[newBlockCount] = allBytes[bytecount];
                 newBlockCount++;
                 bytecount++;
             }
 
-            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length);
+            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, 127);
             return strReturn;
         }
 
         public static List<MessagePointer> ReadNDXFile(string tmpdir, string forumId)
         {
             List<MessagePointer> messagePointers = new List<MessagePointer>();
-            var messagePointer = new MessagePointer();
+
             try
             {
                 byte[] ndxSourceFile = OpenNDXFile(tmpdir, forumId);
@@ -291,14 +283,14 @@ namespace QWK
                 while (countBytes < ndxSourceFile.Length)
                 {
                     nextPointer[0] = ndxSourceFile[countBytes];
-                    nextPointer[1] = ndxSourceFile[countBytes+1];
-                    nextPointer[2] = ndxSourceFile[countBytes+2];
-                    nextPointer[3] = ndxSourceFile[countBytes+3];
-                    BitArray bits = new BitArray(nextPointer);
-                    messagePointer.messageBytesLocation = ConvertMKSToLong(bits);
+                    nextPointer[1] = ndxSourceFile[countBytes + 1];
+                    nextPointer[2] = ndxSourceFile[countBytes + 2];
+                    nextPointer[3] = ndxSourceFile[countBytes + 3];
+                    var messagePointer = new MessagePointer();
+                    messagePointer.messageBytesLocation = ConvertMKSToLong(nextPointer);
                     messagePointers.Add(messagePointer);
                     countBytes = countBytes + 5;
-                }                
+                }
                 return messagePointers;
             }
             catch (Exception e)
@@ -307,9 +299,10 @@ namespace QWK
             }
         }
 
-        private static Int64 ConvertMKSToLong(BitArray mksByteArray)
+        private static Int64 ConvertMKSToLong(byte[] mksBitArray)
         {
-            /* 
+            /*
+            Existem duas formas de representar, parece que cada board usa um. vai ser foda samerda. 
             --------------------------------------------------------
             Microsoft binary (by Jeffery Foy)
             --------------------------------------------------------
@@ -317,37 +310,67 @@ namespace QWK
             +-----------------+----------+
             | exponent | sign | mantissa |
             +----------+------+----------+
-            --------------------------------------------------------
+            -------------------------------------------------------
             */
-            BitArray mantissaBits = new BitArray(23);
-            BitArray exponentBits = new BitArray(9);
-            bool sign = mksByteArray.Get(23);
+            var mantissaBytes = new byte[3];
+            var mantissaCount = 0;
 
-            Int32 mantissa = 0;
-            Int32 exponent = 0;
-            Int64 convertedToLong = 0;
-            int exponentCount = 0; 
+            // pega os bytes da mantissa
+            for (var m = 1; m < 4; m++)
+            {
+                mantissaBytes[mantissaCount] = mksBitArray[m];
+                mantissaCount++;
+            }
+            long mantissa = Convert.ToInt64(mantissaBytes);
+            byte exponentByte = mksBitArray[4];
+            long exponent = Convert.ToInt64(exponentByte);
+
+            // troca o expoente caso seja negativo
+            //if (sign) exponent = exponent * -1;
+
+            // calcula o ponteiro
+            long convertedToLong = (long)Math.Pow(mantissa, exponent);
+            return convertedToLong;
+        }
+
+        private static Int64 ConvertIEEEToLong(BitArray mksBitArray)
+        {
+            /*
+           IEEE (C/Pascal/etc.):
+
+           31     30 - 23    22 - 0        <-- bit position
+           +----------------------------+
+           | sign | exponent | mantissa |
+           +------+----------+----------+
+           */
+            BitArray mantissaBits = new BitArray(22);
+            BitArray exponentBits = new BitArray(8);
+            bool sign = mksBitArray.Get(31);
+            var tempArray = new byte[4];
+            int exponentCount = 0;
 
             // pega os bits da mantissa
-            for (var m = 0; m < 23; m++)
+            for (var m = 0; m < 22; m++)
             {
-                mantissaBits[m] = mksByteArray[m];
-            }
-            mantissa = Convert.ToInt32(mantissaBits);
+                mantissaBits.Set(m, mksBitArray.Get(m));
+            }            
+            mantissaBits.CopyTo(tempArray, 0);
+            int mantissa = BitConverter.ToInt32(tempArray, 0) - 2;
 
             // pega os bytes do expoente 
-            for (var e = 24; e < 32; e++)
+            for (var e = 23; e < 30; e++)
             {
-                exponentBits[exponentCount] = mksByteArray[e];
+                exponentBits.Set(exponentCount, mksBitArray.Get(e));
                 exponentCount++;
             }
-            exponent = Convert.ToInt32(exponentBits);
+            exponentBits.CopyTo(tempArray, 0);
+            int exponent = BitConverter.ToInt32(tempArray, 0);
 
             // troca o expoente caso seja negativo
             if (sign) exponent = exponent * -1;
 
             // calcula o ponteiro
-            convertedToLong = mantissa ^ exponent;
+            long convertedToLong = (long)Math.Pow(mantissa, exponent);
             return convertedToLong;
         }
     }

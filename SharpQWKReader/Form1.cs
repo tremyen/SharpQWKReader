@@ -43,7 +43,8 @@ namespace SharpQWKReader
         {
             try
             {
-                if (this.listView1.SelectedItems.Count == 0) return;
+                if (listView1.SelectedItems.Count == 0) return;
+                lstIndiceAberto.Items.Clear();
                 forumId = listView1.SelectedItems[0].Text;
                 var messagePointers = Q.ReadNDXFile("TMP\\", forumId.ToString());
                 foreach (var messagePointer in messagePointers)
@@ -61,12 +62,24 @@ namespace SharpQWKReader
 
         private void lstIndiceAberto_SelectedIndexChanged(object sender, EventArgs e)
         {
-            messagePointer = Convert.ToInt64(lstIndiceAberto.SelectedItems[0].Text);
-            var message = Q.GetMessage("TMP\\", messagePointer);
-            var rowHeader = new string[] { message.From, message.To, message.Subject };
-            var lvItemHeader = new ListViewItem(rowHeader);
-            lstMessages.Items.Add(lvItemHeader);
-            txtMensagem.Text = message.Body;
+            lstMessages.Items.Clear();
+            txtMensagem.Text = string.Empty;
+            try
+            {
+                if (lstIndiceAberto.SelectedItems.Count == 0) return;
+                lstIndiceAberto.Items.Clear();
+                messagePointer = Convert.ToInt64(lstIndiceAberto.SelectedItems[0].Text);
+                var message = Q.GetMessage("TMP\\", messagePointer);
+                var rowHeader = new string[] { message.From, message.To, message.Subject };
+                var lvItemHeader = new ListViewItem(rowHeader);
+                lstMessages.Items.Add(lvItemHeader);
+                txtMensagem.Text = message.Body;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
     }
 }
