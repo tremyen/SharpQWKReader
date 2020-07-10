@@ -10,20 +10,21 @@ namespace QWK
     public class Message
     {
         public string StatusFlag { get; set; }
-        public string MessageNumber { get; set; }
-        public string MessageDate { get; set; }
-        public string MessageTime { get; set; }
+        public string Number { get; set; }
+        public string Date { get; set; }
+        public string Time { get; set; }
         public string To { get; set; }
         public string From { get; set; }
         public string Subject { get; set; }
         public string Password { get; set; }
         public string ReferenceMessageNumber { get; set; }
-        public Int32 MessageBlocks { get; set; }
+        public int MessageBlocks { get; set; }
         public string DeleteFlag { get; set; }
         public string ConferenceNumber { get; set; }
         public string NumberInCurrentePacket { get; set; }
         public string TagLineFlag { get; set; }
         public string Body { get; set; }
+        public ulong Index { get; set; }
     }
 
     public class BBSInfo
@@ -188,7 +189,21 @@ namespace QWK
             return NumOfMessages;
         }
 
-        public static Message GetMessage(string tmpDirectory, Int64 start)
+        public static List<Message> GetForumMessages(string tmpDirectory, string forumId)
+        {
+            var listOfMessages = new List<Message>();
+            var messagesInForum = GetMessagePointers(tmpDirectory, forumId);
+
+            foreach (MessagePointer messagePointer in messagesInForum) 
+            {
+                var message = GetMessage(tmpDirectory,messagePointer.messageBytesLocation);
+                message.Index = messagePointer.messageBytesLocation;
+                listOfMessages.Add(message);
+            }
+            return listOfMessages;
+        }
+
+        public static Message GetMessage(string tmpDirectory, ulong start)
         {
             /*
             -----------------------------------------------------------------------------------------
@@ -258,7 +273,7 @@ namespace QWK
 
         }
 
-        private static string Get128ByteBlock(string tmpDirectory, Int64 start)
+        private static string Get128ByteBlock(string tmpDirectory, ulong start)
         {
             var allBytes = OpenMessageDat(tmpDirectory);
             byte[] byteBlock = new byte[128];

@@ -8,7 +8,7 @@ namespace SharpQWKReader
     public partial class SharpQWKReader : Form
     {
         public string forumId = "0";
-        public Int64 messagePointer = 0;
+        public ulong messagePointer = 0;
 
         public SharpQWKReader()
         {
@@ -35,7 +35,7 @@ namespace SharpQWKReader
             {
                 var row = new string[] { forum.ID, forum.Name, forum.NumberOfMessages.ToString() };
                 var lvItem = new ListViewItem(row);
-                listView1.Items.Add(lvItem);
+                lstForuns.Items.Add(lvItem);
             }
         }
 
@@ -43,40 +43,36 @@ namespace SharpQWKReader
         {
             try
             {
-                if (listView1.SelectedItems.Count == 0) return;
-                lstIndiceAberto.Items.Clear();
-                forumId = listView1.SelectedItems[0].Text;
-                var messagePointers = Q.GetMessagePointers("TMP\\", forumId.ToString());
-                foreach (var messagePointer in messagePointers)
+                if (lstForuns.SelectedItems.Count == 0) return;
+                lstMessages.Items.Clear();
+                forumId = lstForuns.SelectedItems[0].Text;
+                var messages = Q.GetForumMessages("TMP\\", forumId.ToString());
+                foreach (var message in messages)
                 {
-                    var row = new string[] { messagePointer.messageBytesLocation.ToString() };
+                    var row = new string[] { message.Index.ToString(),message.From,message.To,message.Subject };
                     var lvItem = new ListViewItem(row);
-                    lstIndiceAberto.Items.Add(lvItem);
+                    lstMessages.Items.Add(lvItem);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
             }
         }
 
-        private void lstIndiceAberto_SelectedIndexChanged(object sender, EventArgs e)
+        private void lstMessages_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                if (lstIndiceAberto.SelectedItems.Count == 0) return;
-                lstMessages.Items.Clear();
+                if (lstMessages.SelectedItems.Count == 0) return;
                 txtMensagem.Text = string.Empty;
-                var messagePointer = Convert.ToInt64(lstIndiceAberto.SelectedItems[0].Text);
+                messagePointer = Convert.ToUInt64(lstMessages.SelectedItems[0].Text);
                 var message = Q.GetMessage("TMP\\", messagePointer);
-                var rowHeader = new string[] { message.From, message.To, message.Subject };
-                var lvItemHeader = new ListViewItem(rowHeader);
-                lstMessages.Items.Add(lvItemHeader);
                 txtMensagem.Text = message.Body;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
