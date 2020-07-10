@@ -3,11 +3,9 @@ using System.IO;
 using Z = System.IO.Compression;
 using System.Collections.Generic;
 using System.Text;
-using System.Collections;
 
 namespace QWK
 {
-
 
     public class Message
     {
@@ -189,7 +187,6 @@ namespace QWK
             int NumOfMessages = pointers.Length / 5;
             return NumOfMessages;
         }
-
 
         public static Message GetMessage(string tmpDirectory, Int64 start)
         {
