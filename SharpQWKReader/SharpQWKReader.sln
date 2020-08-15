@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpQWKReader", "SharpQWKReader.csproj", "{ED8B00E1-A2DA-4F28-9CB5-9930E619BAD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QWK", "..\QWK\QWK.csproj", "{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QWK", "..\QWK\QWK.csproj", "{53DB6CB0-2A1C-400D-9363-5DCE0D3EB9EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D1057176-3FF6-42E8-AADB-E107E659EFBC}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

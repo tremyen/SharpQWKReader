@@ -6,83 +6,25 @@ using System.Text;
 
 namespace QWK
 {
-    /*
-    -----------------------------------------------------------------------------------------
-    CONTROL.DAT
-    -----------------------------------------------------------------------------------------
-    Line #
-    1   My BBS                   BBS name
-    2   New York, NY             BBS city and state
-    3   212-555-1212             BBS phone number
-    4   John Doe, Sysop          BBS Sysop name
-    5   20052,MYBBS              Mail door registration #, BBSID
-    6   01-01-1991,23:59:59      Mail packet creation time
-    7   JANE DOE                 User name (upper case)
-    8                            Name of menu for Qmail, blank if none
-    9   0                        ? Seem to be always zero
-    10   999                      Total number of messages in packet
-    11   121                      Total number of conference minus 1
-    12   0                        1st conf. number
-    13   Main Board               1st conf. name (13 characters or less)
-    14   1                        2nd conf. number
-    15   General                  2nd conf. name
-    ..   3                        etc. onward until it hits max. conf.
-    ..   123                      Last conf. number
-    ..   Amiga_I                  Last conf. name
-    ..   HELLO                    Welcome screen file
-    ..   NEWS                     BBS news file
-    ..   SCRIPT0                  Log off screen
-    -----------------------------------------------------------------------------------------
 
-    -----------------------------------------------------------------------------------------
-    MESSAGES.DAT 
-    -----------------------------------------------------------------------------------------
-    Offset  Length  Description
-    ------  ------  -------------------------------------------------------------------------
-    001     001     Message status flag (unsigned character)
-                    ' ' = public, unread
-                    '-' = public, read
-                    '*' = private, read by someone but not by intended recipient
-                    '+' = private, read by official recipient
-                    '~' = comment to Sysop, unread
-                    '`' = comment to Sysop, read
-                    '%' = sender password protected, unread
-                    '^' = sender password protected, read
-                    '!' = group password protected, unread
-                    '#' = group password protected, read
-                    '$' = group password protected to all
-    002       7     Message number (in ASCII)
-    009       8     Date (mm-dd-yy, in ASCII)
-    017       5     Time (24 hour hh:mm, in ASCII)
-    022      25     To (uppercase, left justified)
-    047      25     From (uppercase, left justified)
-    072      25     Subject of message (mixed case)
-    097      12     Password (space filled)
-    109       8     Reference message number (in ASCII)
-    117       6     Number of 128-bytes blocks in message 
-    123       1     Flag (ASCII 225 means message is active; ASCII 226 means this message is to be killed)
-    124       2     Conference number (unsigned word)
-    126       2     Logical message number in the current packet
-    128       1     Indicates whether the message has a network tag-line or not. '*' ' ' 
-    -----------------------------------------------------------------------------------------
-    */
-
-    public class MessageHeader
+    public class Message
     {
         public string StatusFlag { get; set; }
-        public string MessageNumber { get; set; }
-        public string MessageDate { get; set; }
-        public string MessageTime { get; set; }
+        public string Number { get; set; }
+        public string Date { get; set; }
+        public string Time { get; set; }
         public string To { get; set; }
         public string From { get; set; }
         public string Subject { get; set; }
         public string Password { get; set; }
         public string ReferenceMessageNumber { get; set; }
-        public Int32 BytesBlocks { get; set; }
+        public int MessageBlocks { get; set; }
         public string DeleteFlag { get; set; }
         public string ConferenceNumber { get; set; }
         public string NumberInCurrentePacket { get; set; }
         public string TagLineFlag { get; set; }
+        public string Body { get; set; }
+        public ulong Index { get; set; }
     }
 
     public class BBSInfo
@@ -95,12 +37,20 @@ namespace QWK
         public string SysopName { get; set; }
         public string UserName { get; set; }
         public string BbsId { get; set; }
+        public Int32 MessagesInPacket { get; set; }
     }
 
     public class Forum
     {
-        public string ForumID { get; set; }
-        public string ForumName { get; set; }
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public int NumberOfMessages { get; set; }
+
+    }
+
+    public class MessagePointer
+    {
+        public ulong messageBytesLocation { get; set; }
     }
 
     public class Methods
@@ -122,6 +72,34 @@ namespace QWK
 
         private static string[] OpenControlDat(string tmpdir)
         {
+            /*
+            -----------------------------------------------------------------------------------------
+            CONTROL.DAT (Ascii File)
+            -----------------------------------------------------------------------------------------
+            Line #
+            1   My BBS                   BBS name
+            2   New York, NY             BBS city and state
+            3   212-555-1212             BBS phone number
+            4   John Doe, Sysop          BBS Sysop name
+            5   20052,MYBBS              Mail door registration #, BBSID
+            6   01-01-1991,23:59:59      Mail packet creation time
+            7   JANE DOE                 User name (upper case)
+            8                            Name of menu for Qmail, blank if none
+            9   0                        ? Seem to be always zero
+            10   999                      Total number of messages in packet
+            11   121                      Total number of conference minus 1
+            12   0                        1st conf. number
+            13   Main Board               1st conf. name (13 characters or less)
+            14   1                        2nd conf. number
+            15   General                  2nd conf. name
+            ..   3                        etc. onward until it hits max. conf.
+            ..   123                      Last conf. number
+            ..   Amiga_I                  Last conf. name
+            ..   HELLO                    Welcome screen file
+            ..   NEWS                     BBS news file
+            ..   SCRIPT0                  Log off screen
+            -----------------------------------------------------------------------------------------
+            */
             var sb = new StringBuilder();
             sb.Append(tmpdir);
             sb.Append("CONTROL.DAT");
@@ -129,23 +107,43 @@ namespace QWK
             return lines;
         }
 
-        private static byte[] GetMessageDatBytes(string tmpdir)
+        private static byte[] OpenNDXFile(string tmpdir, string forumId)
+        {
+            /*
+            -----------------------------------------------------------------------------------------
+            XXXX.NDX(Byte Array)
+            -----------------------------------------------------------------------------------------
+            Offset  Length Description
+            ------------------------------------------------------------------
+            1       4   Record number pointing to corresponding message in
+                        MESSAGES.DAT.This number is in the Microsoft MKS$
+                        BASIC format.
+            5       1   Conference number of the message.This byte should
+                        not be used because it duplicates both the filename of
+                        the index file and the conference # in the header.  It
+                        is also one byte long, which is insufficient to handle
+                        conferences over 255.
+            -----------------------------------------------------------------------------------------
+            */
+            var sb = new StringBuilder();
+            byte[] byteArray = { new byte() };
+            sb.Append(tmpdir);
+            sb.Append(forumId);
+            sb.Append(".NDX");
+            if (File.Exists(sb.ToString()))
+            {
+                byteArray = File.ReadAllBytes(sb.ToString());
+            }
+            return byteArray;
+        }
+
+        private static byte[] OpenMessageDat(string tmpdir)
         {
             var sb = new StringBuilder();
             sb.Append(tmpdir);
             sb.Append("MESSAGES.DAT");
             var strBytes = File.ReadAllBytes(sb.ToString());
             return strBytes;
-        }
-
-
-        private static string[] OpenMessageDat(string tmpdir)
-        {
-            var sb = new StringBuilder();
-            sb.Append(tmpdir);
-            sb.Append("MESSAGES.DAT");
-            string[] lines = File.ReadAllLines(sb.ToString());
-            return lines;
         }
 
         public static BBSInfo GetBBSInfo(string tmpdir)
@@ -159,6 +157,7 @@ namespace QWK
             bbsInfo.MailDoorReg = lines[4];
             bbsInfo.MailPacketCreationTime = lines[5];
             bbsInfo.UserName = lines[6];
+            bbsInfo.MessagesInPacket = Convert.ToInt32(lines[9]);
             return bbsInfo;
         }
 
@@ -173,73 +172,171 @@ namespace QWK
                 if (i % 2 != 0)
                 {
                     var forum = new Forum();
-                    forum.ForumID = lines[i];
-                    forum.ForumName = lines[i + 1];
+                    forum.ID = lines[i];
+                    forum.Name = lines[i + 1];
+                    forum.NumberOfMessages = GetForumNumberOfMessages(lines[i]);
                     foruns.Add(forum);
                 }
             }
             return foruns;
         }
 
-        public static List<MessageHeader> GetAllHeaders(string tmpdir)
+        public static Int32 GetForumNumberOfMessages(string forumId)
         {
-            var messsageHeaders = new List<MessageHeader>();
-            var allBytes = GetMessageDatBytes(tmpdir);
-            var header = GetMessageHeader(tmpdir, 128);
-            messsageHeaders.Add(header);
-            int messageBlocks = header.BytesBlocks * 128;
-            int nextBlock = messageBlocks + 128;
-            while (nextBlock < allBytes.Length)
+            var pointers = OpenNDXFile("TMP\\", forumId);
+            if (pointers.Length < 5) return 0;
+            int NumOfMessages = pointers.Length / 5;
+            return NumOfMessages;
+        }
+
+        public static List<Message> GetForumMessages(string tmpDirectory, string forumId)
+        {
+            var listOfMessages = new List<Message>();
+            var messagesInForum = GetMessagePointers(tmpDirectory, forumId);
+
+            foreach (MessagePointer messagePointer in messagesInForum) 
             {
-                header = GetMessageHeader(tmpdir, nextBlock);
-                messsageHeaders.Add(header);
-                messageBlocks = header.BytesBlocks * 128;
-                nextBlock = nextBlock + messageBlocks;
+                var message = GetMessage(tmpDirectory,messagePointer.messageBytesLocation);
+                message.Index = messagePointer.messageBytesLocation;
+                listOfMessages.Add(message);
             }
-            return messsageHeaders;
+            return listOfMessages;
         }
 
-
-        public static MessageHeader GetMessageHeader(string tmpDirectory, int start)
+        public static Message GetMessage(string tmpDirectory, ulong start)
         {
-            var header = new MessageHeader();
-            var strHeader = Get128ByteBlock(tmpDirectory, start);
-            header.StatusFlag = strHeader.Substring(0, 1);
-            header.From = strHeader.Substring(46, 25);
-            header.To = strHeader.Substring(21, 25);
-            header.Subject = strHeader.Substring(71, 25);
-            header.BytesBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
-            header.ConferenceNumber = strHeader.Substring(124, 2);
-            header.DeleteFlag = strHeader.Substring(124, 2);
-            return header;
+            /*
+            -----------------------------------------------------------------------------------------
+            MESSAGES.DAT(Byte Array)
+            ---------------------------------------------------------------------------------------- -
+            Offset  Length Description
+            -------------------------------------------------------------------------------------
+            001     001     Message status flag(unsigned character)
+                            ' ' = public, unread
+                            '-' = public, read
+                            '*' = private, read by someone but not by intended recipient
+                            '+' = private, read by official recipient
+                            '~' = comment to Sysop, unread
+                            '`' = comment to Sysop, read
+                            '%' = sender password protected, unread
+                            '^' = sender password protected, read
+                            '!' = group password protected, unread
+                            '#' = group password protected, read
+                            '$' = group password protected to all
+            002       7     Message number(in ASCII)
+            009       8     Date(mm-dd-yy, in ASCII)
+            017       5     Time(24 hour hh:mm, in ASCII)
+            022      25     To(uppercase, left justified)
+            047      25     From(uppercase, left justified)
+            072      25     Subject of message(mixed case)
+            097      12     Password(space filled)
+            109       8     Reference message number(in ASCII)
+            117       6     Number of 128-bytes blocks in message 
+            123       1     Flag(ASCII 225 means message is active; ASCII 226 means this message
+                            is to be killed)
+            124       2     Conference number (unsigned word)
+            126       2     Logical message number in the current packet
+            128       1     Indicates whether the message has a network tag-line or not. '*' ' ' 
+            ----------------------------------------------------------------------------------------- 
+            */
+
+            try
+            {
+                var message = new Message();
+                var countBlocks = 1;
+                var strBlock = new StringBuilder();
+                var strHeader = Get128ByteBlock(tmpDirectory, start);
+                var pointerCount = start + 128;
+
+                message.StatusFlag = strHeader.Substring(0, 1);
+                message.From = strHeader.Substring(46, 25);
+                message.To = strHeader.Substring(21, 25);
+                message.Subject = strHeader.Substring(71, 25);
+                message.MessageBlocks = Convert.ToInt32(strHeader.Substring(116, 6));
+                message.DeleteFlag = strHeader.Substring(122, 1);
+                message.ConferenceNumber = strHeader.Substring(123, 2);
+
+                while (countBlocks <= message.MessageBlocks)
+                {
+                    strBlock.Append(Get128ByteBlock(tmpDirectory, pointerCount));
+                    pointerCount = pointerCount + 128;
+                    countBlocks++;
+                }
+
+                message.Body = strBlock.ToString();
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
-        private static string Get128ByteBlock(string tmpDirectory, int start)
+        private static string Get128ByteBlock(string tmpDirectory, ulong start)
         {
-            var allBytes = GetMessageDatBytes(tmpDirectory);
+            var allBytes = OpenMessageDat(tmpDirectory);
             byte[] byteBlock = new byte[128];
-            var bytecount = start;
             var newBlockCount = 0;
+            var bytecount = start;
 
-            while (newBlockCount < 128)
+            while (newBlockCount <= 127)
             {
                 byteBlock[newBlockCount] = allBytes[bytecount];
                 newBlockCount++;
                 bytecount++;
             }
 
-            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, byteBlock.Length);
+            var strReturn = Encoding.ASCII.GetString(byteBlock, 0, 127);
             return strReturn;
         }
 
-        /* 
-       private static Int64 ConvertMSMKSToLong(byte[] mksNumber)
-       {
+        public static List<MessagePointer> GetMessagePointers(string tmpdir, string forumId)
+        {
+            List<MessagePointer> messagePointers = new List<MessagePointer>();
 
-           Int64 convertedNumber = (((m1 + ((unsigned long) m2 << 8) +((unsigned long) m3 << 16)) | 0x800000L) >> (24 - (exp - 0x80))); 
-           return convertedNumber;
-         
-    }
-          */
+            try
+            {
+                byte[] ndxSourceFile = OpenNDXFile(tmpdir, forumId);
+                if (ndxSourceFile.Length < 4) throw new Exception("There is no message in this forum.");
+                byte[] nextPointer = {0, 0, 0, 0};
+                long countBytes = 0;
+
+                while (countBytes < ndxSourceFile.Length)
+                {
+                    nextPointer[0] = ndxSourceFile[countBytes];
+                    nextPointer[1] = ndxSourceFile[countBytes + 1];
+                    nextPointer[2] = ndxSourceFile[countBytes + 2];
+                    nextPointer[3] = ndxSourceFile[countBytes + 3];
+                    var messagePointer = new MessagePointer();
+                    var recordNumber = GetRecordNumber(nextPointer); 
+                    messagePointer.messageBytesLocation = (recordNumber-1)* 128;
+                    messagePointers.Add(messagePointer);
+                    countBytes = countBytes + 5;
+                }
+                return messagePointers;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private static ulong GetRecordNumber(byte[] pointerByte)
+        {
+            /*
+            --------------------------------------------------------
+            Microsoft binary (by Jeffery Foy)
+            --------------------------------------------------------
+            31 - 24    23     22 - 0        <-- bit position 32 bits
+            +-----------------+----------+
+            | exponent | sign | mantissa |
+            +----------+------+----------+
+            -------------------------------------------------------
+            */
+
+            return ((pointerByte[0] + ((ulong)pointerByte[1] << 8) + 
+                ((ulong)pointerByte[2] << 16)) | 0x800000L) >> (24 - (pointerByte[3] - 0x80));
+        }
     }
 }

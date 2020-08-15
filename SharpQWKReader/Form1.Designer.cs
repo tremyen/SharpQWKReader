@@ -33,10 +33,15 @@
             this.abrirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.lstForuns = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblMsgInThisPacket = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lblBBSPhone = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
             this.lblPacketCreationDate = new System.Windows.Forms.Label();
             this.lblDoorReg = new System.Windows.Forms.Label();
@@ -54,10 +59,9 @@
             this.From = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.To = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Subject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label7 = new System.Windows.Forms.Label();
-            this.lblBBSPhone = new System.Windows.Forms.Label();
+            this.Index = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtMensagem = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -67,11 +71,12 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.arquivoToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1085, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(723, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -92,49 +97,63 @@
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 596);
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 742);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1085, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(723, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.listView1);
-            this.groupBox1.Location = new System.Drawing.Point(406, 28);
+            this.groupBox1.Controls.Add(this.lstForuns);
+            this.groupBox1.Location = new System.Drawing.Point(338, 28);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(669, 206);
+            this.groupBox1.Size = new System.Drawing.Size(377, 225);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Foruns";
             // 
-            // listView1
+            // lstForuns
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lstForuns.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.lstForuns.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
-            this.columnHeader2});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 16);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(663, 187);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.columnHeader2,
+            this.columnHeader3});
+            this.lstForuns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstForuns.FullRowSelect = true;
+            this.lstForuns.GridLines = true;
+            this.lstForuns.HideSelection = false;
+            this.lstForuns.Location = new System.Drawing.Point(3, 16);
+            this.lstForuns.MultiSelect = false;
+            this.lstForuns.Name = "lstForuns";
+            this.lstForuns.Size = new System.Drawing.Size(371, 206);
+            this.lstForuns.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstForuns.TabIndex = 0;
+            this.lstForuns.UseCompatibleStateImageBehavior = false;
+            this.lstForuns.View = System.Windows.Forms.View.Details;
+            this.lstForuns.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Identificador";
-            this.columnHeader1.Width = 88;
+            this.columnHeader1.Text = "Id";
+            this.columnHeader1.Width = 0;
             // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "Nome";
-            this.columnHeader2.Width = 565;
+            this.columnHeader2.Width = 200;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Mensagens";
+            this.columnHeader3.Width = 80;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lblMsgInThisPacket);
+            this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.lblBBSPhone);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.lblUserName);
@@ -151,10 +170,46 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(13, 28);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(387, 206);
+            this.groupBox2.Size = new System.Drawing.Size(319, 225);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "BBS Info";
+            // 
+            // lblMsgInThisPacket
+            // 
+            this.lblMsgInThisPacket.AutoSize = true;
+            this.lblMsgInThisPacket.Location = new System.Drawing.Point(181, 193);
+            this.lblMsgInThisPacket.Name = "lblMsgInThisPacket";
+            this.lblMsgInThisPacket.Size = new System.Drawing.Size(22, 13);
+            this.lblMsgInThisPacket.TabIndex = 15;
+            this.lblMsgInThisPacket.Text = "< >";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(14, 193);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(121, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Messages in this packet";
+            // 
+            // lblBBSPhone
+            // 
+            this.lblBBSPhone.AutoSize = true;
+            this.lblBBSPhone.Location = new System.Drawing.Point(181, 52);
+            this.lblBBSPhone.Name = "lblBBSPhone";
+            this.lblBBSPhone.Size = new System.Drawing.Size(22, 13);
+            this.lblBBSPhone.TabIndex = 13;
+            this.lblBBSPhone.Text = "< >";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(15, 52);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(62, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "BBS Phone";
             // 
             // lblUserName
             // 
@@ -267,9 +322,9 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.lstMessages);
-            this.groupBox3.Location = new System.Drawing.Point(13, 240);
+            this.groupBox3.Location = new System.Drawing.Point(12, 259);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1062, 137);
+            this.groupBox3.Size = new System.Drawing.Size(703, 137);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Messages";
@@ -277,17 +332,20 @@
             // lstMessages
             // 
             this.lstMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Index,
             this.From,
             this.To,
             this.Subject});
             this.lstMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstMessages.FullRowSelect = true;
             this.lstMessages.HideSelection = false;
             this.lstMessages.Location = new System.Drawing.Point(3, 16);
             this.lstMessages.Name = "lstMessages";
-            this.lstMessages.Size = new System.Drawing.Size(1056, 118);
+            this.lstMessages.Size = new System.Drawing.Size(697, 118);
             this.lstMessages.TabIndex = 0;
             this.lstMessages.UseCompatibleStateImageBehavior = false;
             this.lstMessages.View = System.Windows.Forms.View.Details;
+            this.lstMessages.SelectedIndexChanged += new System.EventHandler(this.lstMessages_SelectedIndexChanged);
             // 
             // From
             // 
@@ -296,55 +354,44 @@
             // 
             // To
             // 
+            this.To.DisplayIndex = 1;
             this.To.Text = "To";
             this.To.Width = 120;
             // 
             // Subject
             // 
+            this.Subject.DisplayIndex = 2;
             this.Subject.Text = "Subject";
             this.Subject.Width = 360;
             // 
-            // label7
+            // Index
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 52);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(62, 13);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "BBS Phone";
-            // 
-            // lblBBSPhone
-            // 
-            this.lblBBSPhone.AutoSize = true;
-            this.lblBBSPhone.Location = new System.Drawing.Point(181, 52);
-            this.lblBBSPhone.Name = "lblBBSPhone";
-            this.lblBBSPhone.Size = new System.Drawing.Size(22, 13);
-            this.lblBBSPhone.TabIndex = 13;
-            this.lblBBSPhone.Text = "< >";
+            this.Index.Text = "Index";
+            this.Index.Width = 0;
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.textBox1);
-            this.groupBox4.Location = new System.Drawing.Point(16, 384);
+            this.groupBox4.Controls.Add(this.txtMensagem);
+            this.groupBox4.Location = new System.Drawing.Point(12, 402);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(1056, 199);
+            this.groupBox4.Size = new System.Drawing.Size(703, 337);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Read Pannel";
             // 
-            // textBox1
+            // txtMensagem
             // 
-            this.textBox1.Location = new System.Drawing.Point(7, 20);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(1043, 173);
-            this.textBox1.TabIndex = 0;
+            this.txtMensagem.Location = new System.Drawing.Point(3, 19);
+            this.txtMensagem.Multiline = true;
+            this.txtMensagem.Name = "txtMensagem";
+            this.txtMensagem.Size = new System.Drawing.Size(697, 312);
+            this.txtMensagem.TabIndex = 0;
             // 
             // SharpQWKReader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1085, 618);
+            this.ClientSize = new System.Drawing.Size(723, 764);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -377,7 +424,7 @@
         private System.Windows.Forms.ToolStripMenuItem abrirToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView lstForuns;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -401,7 +448,11 @@
         private System.Windows.Forms.Label lblBBSPhone;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtMensagem;
+        private System.Windows.Forms.Label lblMsgInThisPacket;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader Index;
     }
 }
 
